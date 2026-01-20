@@ -1,0 +1,1179 @@
+import { useState, useRef, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { useApi } from '../Context/AppContext';
+import {
+  Heart,
+  Share2,
+  MapPin,
+  Bed,
+  Bath,
+  Maximize,
+  Home,
+  Phone,
+  Mail,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  X,
+  Building2,
+  Compass,
+  Calendar,
+  IndianRupee,
+  User,
+  Shield,
+  AlertCircle,
+  TrendingUp,
+  TrendingDown,
+  Car,
+  Droplet,
+  Wind,
+  TreeDeciduous,
+  Dumbbell,
+  Waves,
+  Users,
+  ShieldCheck,
+  Zap,
+  ThermometerSun,
+  Sofa,
+  ChefHat,
+  Sparkles,
+  Network,
+  Building,
+  Store,
+  GraduationCap,
+  Hospital,
+  ShoppingBag,
+  Train,
+  Plane,
+  Info,
+  Download,
+  ThumbsUp,
+  ThumbsDown,
+  Star,
+  MessageSquare
+} from 'lucide-react';
+
+const PropertyDetailPage = () => {
+  const { id } = useParams();
+  const { propertyApi } = useApi();
+  
+  const [property, setProperty] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isShortlisted, setIsShortlisted] = useState(false);
+  const [activeSection, setActiveSection] = useState('overview');
+  const [contactForm, setContactForm] = useState({
+    userType: 'Individual',
+    reason: 'Investment',
+    name: '',
+    phone: '',
+    message: 'I am interested in this Property.'
+  });
+
+  // Fetch property data
+  useEffect(() => {
+    const fetchProperty = async () => {
+      console.log('Fetching property ID:', id);
+      setLoading(true);
+      setError(null);
+
+      try {
+        const result = await propertyApi.getPropertyById(id);
+        console.log('Property result:', result);
+
+        if (result.success) {
+          setProperty(result.data);
+        } else {
+          setError(result.error || 'Failed to load property');
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        setError('An error occurred while loading the property');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProperty();
+    }
+  }, [id, propertyApi]);
+
+  // Refs for each section
+  const overviewRef = useRef(null);
+  const societyRef = useRef(null);
+  const dealerRef = useRef(null);
+  const priceRef = useRef(null);
+  const reviewsRef = useRef(null);
+  const recommendationsRef = useRef(null);
+  const articlesRef = useRef(null);
+
+  // Default property structure for fallback
+  const defaultProperty = property || {
+    id: id || 1,
+    title: '3BHK 4Baths',
+    subtitle: 'Flat/Apartment for Sale',
+    price: '₹2.6 Cr',
+    pricePerSqft: '₹13,888 per sq.ft.',
+    estimatedEMI: '₹2,07,663',
+    location: 'Godrej Tropical Isle, Sector 146, Noida',
+    postedDate: 'Posted on Sep 28, 2025',
+    status: 'Under Construction',
+    bedrooms: 3,
+    bathrooms: 4,
+    balconies: '3+',
+    superBuiltArea: '1800 sq.ft.',
+    carpetArea: '1350 sq.ft.',
+    floorNumber: '10th of 35 Floors',
+    facing: 'East',
+    transactionType: 'Resale',
+    ownership: 'Leasehold',
+    furnished: 'Semifurnished',
+    parking: '1 Covered',
+    waterSource: 'Municipal corporation',
+    powerBackup: 'Partial',
+    flooring: 'Marble',
+    gatedSociety: true,
+    petFriendly: true,
+    registrationNo: 'UPRERAPRJ303390',
+    website: 'http://up-rera.in/projects',
+    propertyAge: '1-5 years',
+    availableFrom: 'Dec 2027',
+    possessionStatus: 'Possession in 2027 - Built by Godrej Properties',
+    reraStatus: 'A',
+    images: [
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
+      'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800',
+      'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=800'
+    ],
+    description: `This 3BHK apartment is available for sale in Godrej Tropical Isle, one of the most prominent projects in sector 146 noida. The flat is facing east direction. The flat occupies a super built area of 1800 sq.ft. That consists of 3 bedrooms, 4 bathrooms and 3+ balconies. The property is on the 10th floor of 35 floors.
+
+This property is under construction phase. The flat is semifurnished. This residential property is RERA registered. The registration number is UPRERAPRJ303390.`,
+
+    amenities: [
+      { icon: ShieldCheck, label: 'Security / Fire Alarm', available: true },
+      { icon: Droplet, label: 'Water Storage', available: true },
+      { icon: Wind, label: 'No open drainage ground', available: true },
+      { icon: Network, label: 'Lift(s)', available: true },
+      { icon: Zap, label: 'Intercom Facility', available: true },
+      { icon: Building, label: 'Bank Attached Property', available: true },
+      { icon: Zap, label: 'Piped-gas', available: true },
+      { icon: Users, label: 'Visitor Parking', available: true },
+      { icon: ThermometerSun, label: 'Centrally Air Conditioned', available: true },
+      { icon: ThermometerSun, label: 'High Ceiling Height', available: true }
+    ],
+
+    features: [
+      { icon: Dumbbell, label: 'Fitness Center/ Gym', available: true },
+      { icon: Waves, label: 'Swimming Pool', available: true },
+      { icon: TreeDeciduous, label: 'Park', available: true },
+      { icon: Wind, label: 'Waste Disposal', available: true },
+      { icon: Sparkles, label: 'Maintenance Staff', available: true },
+      { icon: Wind, label: 'Natural Light', available: true },
+      { icon: TreeDeciduous, label: 'Rain Water Harvesting', available: true },
+      { icon: Building, label: 'Any Rooms', available: true },
+      { icon: Network, label: 'Spacious Interiors', available: true },
+      { icon: Users, label: 'Club house / Community Center', available: true },
+      { icon: Store, label: 'Shopping Centre', available: true },
+      { icon: Dumbbell, label: 'Low Density Society', available: true }
+    ],
+
+    furnishing: {
+      lights: 4,
+      fans: 4,
+      ac: 1,
+      modularKitchen: true,
+      chimney: true,
+      exhaustFan: true
+    },
+
+    nearbyPlaces: [
+      { icon: Train, label: 'Noida Sector 146 Metro Station', distance: 'H-01a,a, Sector 146, Noida' },
+      { icon: ShoppingBag, label: 'Gulshan One29 Mall', distance: '' },
+      { icon: Plane, label: 'Noida-Greater Noida Expy', distance: '' },
+      { icon: GraduationCap, label: 'Shiv Nadar School', distance: '' }
+    ],
+
+    owner: {
+      name: 'Naturetech Realty Private Limited',
+      type: 'Dealer',
+      verified: true,
+      operatingSince: '2010',
+      properties: '73',
+      phone: '1800-XXX-XXXX',
+      locations: 'Sector 44 Noida, Sector 146 Noida, Sector 97 Noida, Sector 43 Noida, Sector 143 Noida, Sector 1...More',
+      about: 'Residential Services',
+      address: 'N2, Ground Floor, Tower B, Omaxe Nri City Center, Mall, Near Pari Chowk, Greater Noida, Uttar Prade, Greater Noida',
+      website: 'Naturetech Realty'
+    },
+
+    priceInsights: {
+      priceChange: -3.5,
+      priceChangeText: 'Property Prices decreased by 3.5%',
+      priceChangeSubtext: 'in Godrej Tropical Isle since last one year',
+      priceRange: '2.6 Crore',
+      priceRangeText: 'Property price range starts from 2.6 Crore',
+      priceRangeSubtext: 'but may vary across property types'
+    },
+
+    priceHistory: [
+      { year: '2021', price: 10000 },
+      { year: '2022', price: 12000 },
+      { year: '2023', price: 14000 },
+      { year: '2024', price: 15000 },
+      { year: '2025', price: 16000 },
+      { year: '2026', price: 15000 }
+    ],
+
+    comparisons: [
+      { name: 'Godrej Tropical Isle', currentPrice: '₹15,000/ sq.ft', lastYear: '+1.5%', change: 'up' },
+      { name: 'Sector 146 Noida', currentPrice: '₹16,000/ sq.ft', lastYear: '+0%', change: 'neutral' }
+    ],
+
+    similarProperties: [
+      {
+        id: 2,
+        image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400',
+        price: '₹2.6 Cr',
+        title: '3 BHK',
+        subtitle: 'Godrej Tropical Isle',
+        location: 'Sector 146, Noida'
+      },
+      {
+        id: 3,
+        image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400',
+        price: '₹2.52 Cr',
+        title: '3 BHK',
+        subtitle: 'Godrej Tropical Isle',
+        location: 'Sector 146, Noida'
+      },
+      {
+        id: 4,
+        image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400',
+        price: '₹2.79 Cr',
+        title: '3 BHK',
+        subtitle: 'Godrej Tropical Isle',
+        location: 'Sector 146, Noida'
+      },
+      {
+        id: 5,
+        image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400',
+        price: '₹2.55 Cr',
+        title: '3 BHK',
+        subtitle: 'Godrej Tropical Isle',
+        location: 'Sector 146, Noida'
+      },
+      {
+        id: 6,
+        image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400',
+        price: '₹2.7 Cr',
+        title: '3 BHK',
+        subtitle: 'Godrej Tropical Isle',
+        location: 'Sector 146, Noida'
+      }
+    ]
+  };
+
+  const tabs = [
+    { id: 'overview', label: 'Overview', ref: overviewRef },
+    { id: 'society', label: 'Society', ref: societyRef },
+    { id: 'dealer', label: 'Dealer Details', ref: dealerRef },
+    { id: 'price', label: 'Price Trends', ref: priceRef },
+    { id: 'reviews', label: 'Society Reviews', ref: reviewsRef },
+    { id: 'recommendations', label: 'Recommendations', ref: recommendationsRef },
+    { id: 'articles', label: 'Articles', ref: articlesRef }
+  ];
+
+  const scrollToSection = (sectionRef, sectionId) => {
+    setActiveSection(sectionId);
+    sectionRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest'
+    });
+  };
+
+  const nextImage = () => {
+    if (!formattedProperty?.images) return;
+    setCurrentImageIndex((prev) => (prev + 1) % formattedProperty.images.length);
+  };
+
+  const prevImage = () => {
+    if (!formattedProperty?.images) return;
+    setCurrentImageIndex((prev) => (prev - 1 + formattedProperty.images.length) % formattedProperty.images.length);
+  };
+
+  const toggleShortlist = () => {
+    setIsShortlisted(!isShortlisted);
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-700 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading property details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !property) {
+    return (
+      <div className="min-h-screen bg-slate-700 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-8">
+            <AlertCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-gray-100 mb-2">Property Not Found</h2>
+            <p className="text-red-600 mb-4">{error || 'The property you are looking for does not exist or has been removed.'}</p>
+            <Link
+              to="/properties"
+              className="inline-block bg-amber-500 text-white px-6 py-2 rounded-lg hover:bg-amber-600 transition"
+            >
+              Back to Properties
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Format property data
+  const formattedProperty = {
+    ...property,
+    images: property.photos && property.photos.length > 0 ? property.photos : [
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800'
+    ],
+    title: `${property.bedrooms || '3'} BHK ${property.propertySubType || 'Apartment'}`,
+    subtitle: `${property.propertyType || 'Residential'} ${property.purpose || 'for Sale'}`,
+    price: property.expectedPrice ? `₹${property.expectedPrice}` : 'Price on request',
+    pricePerSqft: property.pricePerSqFt ? `₹${property.pricePerSqFt} per sq.ft.` : '',
+    location: `${property.locality || ''}, ${property.city || ''}`,
+    superBuiltArea: property.builtUpArea ? `${property.builtUpArea} ${property.areaUnit || 'sq.ft.'}` : 
+                    property.plotArea ? `${property.plotArea} ${property.areaUnit || 'sq.ft.'}` : 'N/A',
+    carpetArea: property.carpetArea ? `${property.carpetArea} ${property.areaUnit || 'sq.ft.'}` : 'N/A',
+    floorNumber: property.totalFloors ? `${property.totalFloors} Floors` : 'N/A',
+    facing: property.propertyFacing || 'N/A',
+    furnished: property.furnishing || 'N/A',
+    parking: `${property.coveredParking || 0} Covered, ${property.openParking || 0} Open`,
+    waterSource: property.waterSource && property.waterSource.length > 0 ? property.waterSource.join(', ') : 'N/A',
+    powerBackup: property.powerBackup || 'N/A',
+    flooring: property.flooringType || 'N/A',
+    gatedSociety: property.otherFeatures?.gatedSociety || false,
+    petFriendly: property.otherFeatures?.petFriendly || false,
+    propertyAge: property.propertyAge || 'N/A',
+    availableFrom: property.availabilityStatus || 'N/A',
+    postedDate: `Posted on ${new Date(property.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
+    status: property.availabilityStatus || property.status,
+    description: property.propertyDescription || 'No description available.',
+    // Additional fields used in JSX
+    bedrooms: property.bedrooms || 'N/A',
+    bathrooms: property.bathrooms || 'N/A',
+    balconies: property.balconies || 'N/A',
+    reraStatus: property.reraStatus || 'N/A',
+    registrationNo: property.registrationNo || 'N/A',
+    website: property.website || 'N/A',
+    transactionType: property.transactionType || 'N/A',
+    ownership: property.ownership || 'Owner',
+    estimatedEMI: property.estimatedEMI || 'Calculate',
+    amenities: property.amenities || [],
+    features: property.features || [],
+    priceInsights: property.priceInsights || {},
+    comparisons: property.comparisons || [],
+    similarProperties: property.similarProperties || [],
+    owner: {
+      name: property.owner?.userName || 'Property Owner',
+      type: property.ownership || 'Owner',
+      verified: property.status === 'approved',
+      phone: property.owner?.phone || 'Not available',
+      email: property.owner?.email || 'Not available',
+      properties: property.owner?.properties || 'N/A',
+      locations: property.owner?.locations || 'N/A',
+      about: property.owner?.about || 'N/A',
+      address: property.owner?.address || 'N/A',
+      website: property.owner?.website || 'N/A'
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-700">
+      {/* Breadcrumb Navigation */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center text-sm text-gray-600 flex-wrap gap-2">
+            <Link to="/" className="hover:text-amber-500 transition">Home</Link>
+            <span>/</span>
+            <Link to="/properties" className="hover:text-amber-500 transition">Property in Noida</Link>
+            <span>/</span>
+            <Link to="/properties" className="hover:text-amber-500 transition">Flats in Noida</Link>
+            <span>/</span>
+            <Link to="/properties" className="hover:text-amber-500 transition">Flats in Noida Expressway</Link>
+            <span>/</span>
+            <Link to="/properties" className="hover:text-amber-500 transition">Flats in Sector 146 Noida</Link>
+            <span>/</span>
+            <span className="text-gray-100">3 BHK Flats in Sector 146 Noida</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Main Content - Full Width */}
+        <div className="space-y-6">
+            {/* Image Gallery */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-slate-800 rounded-lg shadow-md overflow-hidden"
+            >
+              {/* Main Image */}
+              <div className="relative aspect-video bg-gray-900">
+                <img
+                  src={formattedProperty.images[currentImageIndex]}
+                  alt={formattedProperty.title}
+                  className="w-full h-full object-cover"
+                />
+
+                {/* Image Navigation */}
+                <button
+                  onClick={prevImage}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="w-6 h-6 text-gray-100" />
+                </button>
+                <button
+                  onClick={nextImage}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="w-6 h-6 text-gray-100" />
+                </button>
+
+                {/* Image Counter */}
+                <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                  Photo {currentImageIndex + 1} of {formattedProperty.images.length}
+                </div>
+
+                {/* Overlay Badge */}
+                <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded text-xs font-semibold">
+                  Featured
+                </div>
+              </div>
+
+              {/* Image Thumbnails */}
+              <div className="grid grid-cols-7 gap-2 p-4 bg-slate-700">
+                {formattedProperty.images.map((img, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`aspect-video rounded overflow-hidden border-2 transition ${
+                      currentImageIndex === index ? 'border-amber-500' : 'border-transparent hover:border-gray-300'
+                    }`}
+                  >
+                    <img src={img} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+                <button className="aspect-video rounded bg-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-300 transition">
+                  <span className="text-xs font-medium">+32</span>
+                </button>
+              </div>
+
+              {/* Property Info Banner */}
+              <div className="p-4 border-t bg-yellow-50">
+                <p className="text-sm text-gray-700">
+                  <AlertCircle className="w-4 h-4 inline mr-2 text-yellow-600" />
+                  <span className="font-semibold">3 people already contacted yesterday</span>
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Property Overview */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-slate-800 rounded-lg shadow-md p-6"
+            >
+              {/* Header */}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="bg-teal-500 text-white px-3 py-1 rounded text-xs font-semibold flex items-center gap-1">
+                      <Info className="w-3 h-3" />
+                      RERA STATUS {formattedProperty.reraStatus || 'N/A'}
+                    </span>
+                    <span className="bg-amber-500 text-white px-3 py-1 rounded text-xs font-semibold">
+                      REGISTERED
+                    </span>
+                  </div>
+                  <h1 className="text-2xl font-bold text-gray-100 mb-1">{formattedProperty.title}</h1>
+                  <p className="text-gray-600 mb-2">{formattedProperty.subtitle}</p>
+                  <p className="text-sm text-gray-500 mb-1">In {formattedProperty.location.split(',')[0]}</p>
+                  <p className="text-xs text-gray-400">
+                    Registration No: {formattedProperty.registrationNo || 'N/A'} | Website: {formattedProperty.website || 'N/A'}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={toggleShortlist}
+                    className={`p-2 rounded-full transition ${
+                      isShortlisted ? 'bg-red-50 text-red-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                    aria-label="Add to shortlist"
+                  >
+                    <Heart className={`w-5 h-5 ${isShortlisted ? 'fill-current' : ''}`} />
+                  </button>
+                  <button
+                    className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
+                    aria-label="Share"
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Price Section */}
+              <div className="mb-6 pb-6 border-b">
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-3xl font-bold text-gray-100">{formattedProperty.price}</span>
+                  <span className="text-lg text-gray-600">{formattedProperty.pricePerSqft}</span>
+                </div>
+                <p className="text-sm text-gray-600 mb-2">
+                  Estimated EMI <span className="font-semibold text-gray-100">{formattedProperty.estimatedEMI || 'Calculate'}</span>
+                </p>
+                <p className="text-xs text-gray-500">{formattedProperty.postedDate} • {formattedProperty.status}</p>
+              </div>
+            </motion.div>
+
+            {/* Navigation Tabs - Sticky to Top */}
+            <div className="sticky top-0 bg-white z-50 shadow-sm -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 border-b">
+              <div className="max-w-7xl mx-auto">
+                <div className="flex items-center gap-1 overflow-x-auto py-3">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => scrollToSection(tab.ref, tab.id)}
+                      className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition border-b-2 ${
+                        activeSection === tab.id
+                          ? 'text-amber-500 border-amber-500'
+                          : 'text-gray-600 border-transparent hover:text-gray-100'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Property Details Content */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-slate-800 rounded-lg shadow-md p-6 mt-6"
+            >
+
+              {/* Sections Content */}
+              <div className="space-y-12">
+                {/* Overview Section */}
+                <div ref={overviewRef} id="overview" className="scroll-mt-24 space-y-6">
+                  {/* Key Highlights */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center">
+                        <Maximize className="w-5 h-5 text-amber-500" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Area</p>
+                        <p className="font-semibold text-gray-100">{formattedProperty.superBuiltArea}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+                        <Bed className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Configuration</p>
+                        <p className="font-semibold text-gray-100 text-sm">{formattedProperty.bedrooms || 'N/A'} Bedrooms, {formattedProperty.bathrooms || 'N/A'} Bathrooms, {formattedProperty.balconies || 'N/A'} Balconies</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center">
+                        <MapPin className="w-5 h-5 text-amber-500" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Address</p>
+                        <p className="font-semibold text-gray-100 text-sm">{formattedProperty.location}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
+                        <Compass className="w-5 h-5 text-orange-600" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Facing</p>
+                        <p className="font-semibold text-gray-100">{formattedProperty.facing}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center">
+                        <Building2 className="w-5 h-5 text-red-600" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Floor Number</p>
+                        <p className="font-semibold text-gray-100 text-sm">{formattedProperty.floorNumber}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-yellow-50 rounded-lg flex items-center justify-center">
+                        <Calendar className="w-5 h-5 text-yellow-600" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Possession in</p>
+                        <p className="font-semibold text-gray-100">{formattedProperty.availableFrom}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* About Property */}
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-100 mb-3">About Property</h3>
+                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                      {formattedProperty.description}
+                    </p>
+                  </div>
+
+                  {/* Features */}
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-100 mb-3">Features</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {formattedProperty.amenities && formattedProperty.amenities.map((amenity, index) => {
+                        const Icon = typeof amenity.icon === 'function' ? amenity.icon : Check;
+                        return (
+                          <div key={index} className="flex items-center gap-2">
+                            <Icon className="w-5 h-5 text-amber-500" />
+                            <span className="text-sm text-gray-700">{amenity.label || amenity}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Society Features */}
+                  <div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {formattedProperty.features && formattedProperty.features.map((feature, index) => {
+                        const Icon = typeof feature.icon === 'function' ? feature.icon : Check;
+                        return (
+                          <div key={index} className="flex items-center gap-2">
+                            <Icon className="w-5 h-5 text-green-600" />
+                            <span className="text-sm text-gray-700">{feature.label || feature}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Society Section */}
+                <div ref={societyRef} id="society" className="scroll-mt-24 space-y-6">
+                  <h2 className="text-2xl font-bold text-gray-100">Society Details</h2>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center py-2 border-b">
+                      <span className="text-sm text-gray-600">Transaction Type</span>
+                      <span className="text-sm font-semibold text-gray-100">{formattedProperty.transactionType || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b">
+                      <span className="text-sm text-gray-600">Ownership</span>
+                      <span className="text-sm font-semibold text-gray-100">{formattedProperty.ownership}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b">
+                      <span className="text-sm text-gray-600">Gated community</span>
+                      <span className="text-sm font-semibold text-gray-100">{formattedProperty.gatedSociety ? 'Yes' : 'No'}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b">
+                      <span className="text-sm text-gray-600">Carpet Area</span>
+                      <span className="text-sm font-semibold text-gray-100">{formattedProperty.carpetArea}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b">
+                      <span className="text-sm text-gray-600">Pet Friendly</span>
+                      <span className="text-sm font-semibold text-gray-100">{formattedProperty.petFriendly ? 'Yes' : 'No'}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b">
+                      <span className="text-sm text-gray-600">Parking</span>
+                      <span className="text-sm font-semibold text-gray-100">{formattedProperty.parking}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dealer Details Section */}
+                <div ref={dealerRef} id="dealer" className="scroll-mt-24 space-y-6">
+                  {/* Dealer Details */}
+                  <div className="flex flex-col md:flex-row gap-6">
+                    {/* Left - Dealer Info */}
+                    <div className="md:w-1/3">
+                      <h3 className="text-lg font-bold text-gray-100 mb-4">Dealer Details</h3>
+                      <div className="flex items-start gap-3 mb-4">
+                        <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-slate-900 rounded flex items-center justify-center text-white">
+                          <User className="w-8 h-8" />
+                        </div>
+                        <div>
+                          <button className="bg-amber-500 text-white px-4 py-1 rounded text-sm font-semibold hover:bg-amber-600 mb-2">
+                            View Phone Number
+                          </button>
+                          <p className="text-xs text-gray-600">Rera Registered: UPRERAPRJ303390</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3 text-sm">
+                        <div>
+                          <h4 className="text-amber-500 font-semibold mb-1">{formattedProperty.owner.name}</h4>
+                          <p className="text-gray-600">Real Estate / Property Private Limited</p>
+                        </div>
+
+                        <div>
+                          <p className="font-semibold text-gray-100 mb-1">Properties Listed: {formattedProperty.owner.properties || 'N/A'}</p>
+                        </div>
+
+                        <div>
+                          <p className="text-gray-600 mb-1"><strong>Locations:</strong></p>
+                          <p className="text-gray-700">{formattedProperty.owner.locations || 'N/A'}</p>
+                        </div>
+
+                        <div>
+                          <p className="text-gray-600"><strong>About {formattedProperty.owner.name}</strong></p>
+                          <p className="text-gray-700">{formattedProperty.owner.about || 'N/A'}</p>
+                        </div>
+
+                        <div>
+                          <p className="text-gray-600 mb-1"><strong>Address:</strong></p>
+                          <p className="text-gray-700">{formattedProperty.owner.address || 'N/A'}</p>
+                        </div>
+
+                        <div>
+                          <p className="text-gray-600"><strong>Website:</strong> <a href="#" className="text-amber-500 hover:underline">{formattedProperty.owner.website || 'N/A'}</a></p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right - Contact Form */}
+                    <div className="md:w-2/3">
+                      <h3 className="text-lg font-bold text-gray-100 mb-4">Send enquiry to Dealer</h3>
+                      <div className="space-y-4">
+                        <div className="flex gap-4">
+                          <div>
+                            <p className="text-sm text-gray-600 mb-2">You are</p>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => setContactForm({ ...contactForm, userType: 'Individual' })}
+                                className={`px-4 py-2 rounded border text-sm ${
+                                  contactForm.userType === 'Individual'
+                                    ? 'bg-amber-500 text-white border-amber-500'
+                                    : 'bg-white text-gray-700 border-gray-300'
+                                }`}
+                              >
+                                Individual
+                              </button>
+                              <button
+                                onClick={() => setContactForm({ ...contactForm, userType: 'Dealer' })}
+                                className={`px-4 py-2 rounded border text-sm ${
+                                  contactForm.userType === 'Dealer'
+                                    ? 'bg-amber-500 text-white border-amber-500'
+                                    : 'bg-white text-gray-700 border-gray-300'
+                                }`}
+                              >
+                                Dealer
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="flex-1">
+                            <p className="text-sm text-gray-600 mb-2">Your reason to buy is</p>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => setContactForm({ ...contactForm, reason: 'Self Use' })}
+                                className={`px-4 py-2 rounded border text-sm ${
+                                  contactForm.reason === 'Self Use'
+                                    ? 'bg-amber-500 text-white border-amber-500'
+                                    : 'bg-white text-gray-700 border-gray-300'
+                                }`}
+                              >
+                                Self Use
+                              </button>
+                              <button
+                                onClick={() => setContactForm({ ...contactForm, reason: 'Investment' })}
+                                className={`px-4 py-2 rounded border text-sm ${
+                                  contactForm.reason === 'Investment'
+                                    ? 'bg-amber-500 text-white border-amber-500'
+                                    : 'bg-white text-gray-700 border-gray-300'
+                                }`}
+                              >
+                                Investment
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <input
+                            type="text"
+                            placeholder="Name"
+                            value={contactForm.name}
+                            onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                          />
+                        </div>
+
+                        <div className="flex gap-2">
+                          <select className="px-3 py-2 border border-gray-300 rounded">
+                            <option>IND (+91)</option>
+                          </select>
+                          <input
+                            type="tel"
+                            placeholder="Phone Number"
+                            value={contactForm.phone}
+                            onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                            className="flex-1 px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                          />
+                        </div>
+
+                        <div>
+                          <textarea
+                            rows="3"
+                            value={contactForm.message}
+                            onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
+                          />
+                          <p className="text-xs text-gray-500 mt-1 text-right">400 chars</p>
+                        </div>
+
+                        <div className="text-xs text-gray-600">
+                          I agree to the <a href="#" className="text-amber-500 hover:underline">Terms & Conditions</a> and <a href="#" className="text-amber-500 hover:underline">Privacy Policy</a>
+                        </div>
+
+                        <button className="bg-amber-500 text-white px-8 py-2 rounded font-semibold hover:bg-amber-600 transition">
+                          Send Email & SMS
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Price Trends Section */}
+                <div ref={priceRef} id="price" className="scroll-mt-24 space-y-6">
+                  {/* Price Insights */}
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-100 mb-4">Price Insights</h3>
+                    <p className="text-sm text-gray-600 mb-4">For {formattedProperty.location.split(',')[0]}, {formattedProperty.location.split(',')[1] || ''}</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
+                        <TrendingDown className="w-6 h-6 text-green-600 mt-1" />
+                        <div>
+                          <p className="font-semibold text-gray-100">{formattedProperty.priceInsights?.priceChangeText || 'N/A'}</p>
+                          <p className="text-sm text-gray-600">{formattedProperty.priceInsights?.priceChangeSubtext || 'N/A'}</p>
+                        </div>
+                      </div>
+
+                      <div className="bg-amber-50 border border-purple-200 rounded-lg p-4 flex items-start gap-3">
+                        <Building className="w-6 h-6 text-amber-500 mt-1" />
+                        <div>
+                          <p className="font-semibold text-gray-100">{formattedProperty.priceInsights?.priceRangeText || 'N/A'}</p>
+                          <p className="text-sm text-gray-600">{formattedProperty.priceInsights?.priceRangeSubtext || 'N/A'}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Price Trend Chart */}
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-100 mb-4">Price Trend & Comparison</h3>
+                    <div className="flex gap-4 mb-4">
+                      <button className="px-4 py-2 bg-white border-b-2 border-amber-500 text-amber-500 font-semibold">
+                        With Locality
+                      </button>
+                      <button className="px-4 py-2 text-gray-600 hover:text-gray-100">
+                        With Societies
+                      </button>
+                    </div>
+
+                    <p className="text-sm text-gray-600 mb-2">The graph shows the quarterly average rates of properties.</p>
+
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-2xl font-bold text-gray-100">₹ 15,000 <span className="text-sm font-normal">/ sq.ft</span></p>
+                        <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+                          <option>Last 5 Years</option>
+                        </select>
+                      </div>
+                      <p className="text-xs text-gray-600 mb-4">AVG. PROPERTY RATE</p>
+
+                      {/* Simple Chart Visualization */}
+                      <div className="relative h-48 bg-gradient-to-t from-amber-100 to-transparent rounded-lg border border-gray-200 p-4">
+                        <svg className="w-full h-full" viewBox="0 0 400 150">
+                          <path
+                            d="M 0 120 Q 50 100, 100 110 T 200 90 T 300 100 T 400 80"
+                            fill="none"
+                            stroke="#8b5cf6"
+                            strokeWidth="3"
+                          />
+                          <path
+                            d="M 0 120 Q 50 100, 100 110 T 200 90 T 300 100 T 400 80 L 400 150 L 0 150 Z"
+                            fill="url(#gradient)"
+                            opacity="0.3"
+                          />
+                          <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                              <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.5" />
+                              <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.1" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                        <div className="absolute bottom-2 left-0 right-0 flex justify-between px-4 text-xs text-gray-600">
+                          <span>2021</span>
+                          <span>2022</span>
+                          <span>2023</span>
+                          <span>2024</span>
+                          <span>2025</span>
+                          <span>2026</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Comparison Table */}
+                    <div className="border rounded-lg overflow-hidden">
+                      <div className="bg-slate-700 px-4 py-3 font-semibold text-sm text-gray-100 border-b flex items-center justify-between">
+                        <span>CURRENTLY COMPARING</span>
+                        <button className="text-amber-500 text-xs hover:underline flex items-center gap-1">
+                          <span>Compare with other Societies</span>
+                        </button>
+                      </div>
+                      <div className="divide-y">
+                        <div className="px-4 py-3 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <input type="checkbox" checked readOnly className="rounded" />
+                            <span className="text-sm font-medium">With Locality</span>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-semibold text-sm">Current Price</p>
+                            <p className="text-xs text-gray-600">Last 1 year</p>
+                          </div>
+                        </div>
+                        {formattedProperty.comparisons && formattedProperty.comparisons.map((comp, index) => (
+                          <div key={index} className="px-4 py-3 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <input type="checkbox" checked readOnly className="rounded" />
+                              <span className="text-sm">{comp.name}</span>
+                            </div>
+                            <div className="text-right flex items-center gap-4">
+                              <span className="font-semibold text-sm">{comp.currentPrice}</span>
+                              <span className={`text-xs flex items-center gap-1 ${
+                                comp.change === 'up' ? 'text-green-600' : 'text-gray-600'
+                              }`}>
+                                {comp.change === 'up' ? '▲' : '▬'} {comp.lastYear}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 text-center">
+                      <button className="text-amber-500 font-semibold hover:underline text-sm">
+                        Click for More Price Details
+                      </button>
+                    </div>
+
+                    {/* CTA Banner */}
+                    <div className="mt-6 bg-gradient-to-r from-amber-500 to-amber-500 rounded-lg p-6 text-white flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                          <TrendingUp className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-lg">Check Property Rates & Trends</h4>
+                          <p className="text-sm text-white/90">for any locality or society</p>
+                        </div>
+                      </div>
+                      <button className="bg-white text-amber-500 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition flex items-center gap-2">
+                        See Price Trends →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Society Reviews Section */}
+                <div ref={reviewsRef} id="reviews" className="scroll-mt-24 space-y-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-100 mb-2">Society Reviews</h3>
+                    <p className="text-sm text-gray-600 mb-6">{formattedProperty.location.split(',')[0]} Ratings and Reviews</p>
+
+                    {/* No Reviews State */}
+                    <div className="text-center py-12">
+                      <div className="w-24 h-24 mx-auto mb-4 bg-amber-50 rounded-full flex items-center justify-center">
+                        <MessageSquare className="w-12 h-12 text-amber-400" />
+                      </div>
+                      <h4 className="text-lg font-semibold text-gray-100 mb-2">Review this Society</h4>
+                      <p className="text-sm text-gray-600 mb-4">
+                        We don't have sufficient reviews to display. Write a<br />review & help others make right choice
+                      </p>
+                      <button className="bg-amber-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-amber-600 transition">
+                        Review this Society
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recommendations Section */}
+                <div ref={recommendationsRef} id="recommendations" className="scroll-mt-24 space-y-6">
+                  <h3 className="text-lg font-bold text-gray-100">Recommendations</h3>
+                  <p className="text-sm text-gray-600">Based on this property, you might also like these options</p>
+                  {/* Add recommendations content here */}
+                </div>
+
+                {/* Articles Section */}
+                <div ref={articlesRef} id="articles" className="scroll-mt-24 space-y-6">
+                  <h3 className="text-lg font-bold text-gray-100">Articles</h3>
+                  <p className="text-sm text-gray-600">Read articles related to {formattedProperty.location.split(',')[0]}</p>
+                  {/* Add articles content here */}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Similar Properties */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-slate-800 rounded-lg shadow-md p-6"
+            >
+              <h2 className="text-xl font-bold text-gray-100 mb-4">Similar Properties</h2>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {formattedProperty.similarProperties && formattedProperty.similarProperties.map((prop) => (
+                  <Link
+                    key={prop.id}
+                    to={`/properties/${prop.id}`}
+                    className="group relative rounded-lg overflow-hidden shadow-md hover:shadow-xl transition"
+                  >
+                    <div className="aspect-[4/3] relative">
+                      <img src={prop.image} alt={prop.title} className="w-full h-full object-cover" />
+                      <button className="absolute top-2 right-2 bg-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition">
+                        <Heart className="w-4 h-4 text-gray-600" />
+                      </button>
+                    </div>
+                    <div className="p-3 bg-white">
+                      <p className="font-bold text-gray-100 mb-1">{prop.price}, {prop.title}</p>
+                      <p className="text-xs text-gray-600 mb-1">{prop.subtitle}</p>
+                      <p className="text-xs text-gray-500">{prop.location}</p>
+                      <button className="mt-2 w-full bg-amber-500 text-white py-1.5 rounded text-xs font-semibold hover:bg-amber-600 transition">
+                        Enquire Now
+                      </button>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Property Score Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="bg-slate-800 rounded-lg shadow-md p-6"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-100 mb-2">{formattedProperty.price}</h2>
+                  <h3 className="text-lg text-gray-700 mb-2">{formattedProperty.title}</h3>
+                  <p className="text-sm text-gray-600">{formattedProperty.location}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button className="p-2 border border-gray-300 rounded-lg hover:bg-slate-700 transition">
+                    <Heart className="w-5 h-5 text-gray-600" />
+                  </button>
+                  <button className="bg-amber-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-amber-600 transition flex items-center gap-2">
+                    <Phone className="w-4 h-4" />
+                    Contact Dealer FREE
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center gap-2">
+                <span className="bg-teal-500 text-white px-3 py-1 rounded text-xs font-semibold">
+                  RERA STATUS {formattedProperty.reraStatus || 'N/A'}
+                </span>
+                <span className="bg-amber-500 text-white px-3 py-1 rounded text-xs font-semibold">
+                  REGISTERED
+                </span>
+                <span className="text-xs text-gray-600">
+                  Registration No: {formattedProperty.registrationNo || 'N/A'}
+                </span>
+              </div>
+            </motion.div>
+
+            {/* Bottom Recommendations */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="bg-slate-800 rounded-lg shadow-md p-6"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-100">Recommendations</h2>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {formattedProperty.similarProperties && formattedProperty.similarProperties.slice(0, 5).map((prop) => (
+                  <Link
+                    key={prop.id}
+                    to={`/properties/${prop.id}`}
+                    className="group rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition"
+                  >
+                    <div className="aspect-[4/3] relative">
+                      <img src={prop.image} alt={prop.title} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="p-2 bg-white">
+                      <p className="font-semibold text-sm text-gray-100">{prop.price}, {prop.title}</p>
+                      <p className="text-xs text-gray-600">{prop.subtitle}</p>
+                      <p className="text-xs text-gray-500">{prop.location}</p>
+                      <button className="mt-2 w-full bg-amber-500 text-white py-1 rounded text-xs font-semibold hover:bg-amber-600 transition">
+                        Enquire Now
+                      </button>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Download Brochure */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="bg-slate-800 rounded-lg shadow-md p-6 text-center"
+            >
+              <button className="inline-flex items-center gap-2 bg-amber-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-amber-600 transition">
+                <Download className="w-5 h-5" />
+                Download Brochure
+              </button>
+            </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PropertyDetailPage;
